@@ -1,6 +1,9 @@
 # http://www.cs.bham.ac.uk/%7Eexr/lectures/opsys/10_11/lectures/os-dev.pdf
 # https://github.com/cfenollosa/os-tutorial
+--------------------------------------------------------
+
 #assmeble boot sector
+
 nasm boot_sec.asm -f bin -o boot_sec.bin
 
 #show binary
@@ -9,3 +12,38 @@ od -t x1 -A n boot_sec.bin
 #create floppy from binary
 dd if=/dev/zero of=floppy.img ibs=1k count=1440
 dd if=boot_sec.bin of=floppy.img conv=notrunc
+
+--------------------------------------------------------
+#create a VirtualBox vm to run the OS
+export VIRTUALMACHINE_NAME="test-grounds"
+VBoxManage createvm --name "$VIRTUALMACHINE_NAME" --ostype Other --register
+
+#32 megs of ram, 128MB HDD, utc time, acpi, bridged nic
+VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --memory 16 --rtcuseutc on --acpi on --nic1 bridged --bridgeadapter1 enp6s0 --macaddress1 c0ffeeca5e1c --uart1 0x3f8 4 --uart2 0x2f8 3 --uartmode2 disconnected  --uartmode1 disconnected
+VBoxManage createhd --filename "$VIRTUALMACHINE_NAME".vdi --size 128 --format VDI
+VBoxManage storagectl "$VIRTUALMACHINE_NAME" --add sata --controller IntelAHCI --name "SATCONTROL"
+VBoxManage storageattach "$VIRTUALMACHINE_NAME" --storagectl "SATCONTROL" --port 0 --device 0 --type hdd --medium "$VIRTUALMACHINE_NAME".vdi
+VBoxManage storagectl "$VIRTUALMACHINE_NAME" --add ide --controller PIIX3 --name "IDECONTROL"
+VBoxManage storagectl "$VIRTUALMACHINE_NAME" --add floppy --name "Floppycontrol"
+
+#add VRDP 
+VBoxManage setproperty vrdeauthlibrary "VBoxAuthSimple"
+VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --vrdeauthtype external --vrdeauthlibrary VBoxAuthSimple
+export PASSHASH=`VBoxManage internalcommands passwordhash secretpassword|sed  -e 's/Password hash: //g'`
+VBoxManage setextradata "$VIRTUALMACHINE_NAME" "VBoxAuthSimple/users/jlr" $PASSHASH
+VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --vrde on --vrdemulticon on --vrdeextpack default --vrdeport 3389 --vrdeauthtype external --vrdeauthlibrary VBoxAuthSimple
+
+#delete it
+VBoxManage unregistervm "$VIRTUALMACHINE_NAME" --delete
+
+#fire it up
+VBoxManage startvm "$VIRTUALMACHINE_NAME" --type headless
+
+#shut it down
+VBoxManage controlvm "$VIRTUALMACHINE_NAME" poweroff
+
+#show info
+VBoxManage showvminfo "$VIRTUALMACHINE_NAME"
+--------------------------------------------------------
+
+
