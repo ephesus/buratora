@@ -1,0 +1,5 @@
+#assmeble boot sector
+nasm boot_sec.asm -f bin -o boot_sec.bin
+
+#show binary
+od -t x1 -A n boot_sec.bin
