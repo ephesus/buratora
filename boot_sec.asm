@@ -1,3 +1,22 @@
+mov ah, 0x0e
+
+mov al, 'B'
+int 0x10
+mov al, 'U'
+int 0x10
+mov al, 'R'
+int 0x10
+mov al, 'A'
+int 0x10
+mov al, 'T'
+int 0x10
+mov al, 'O'
+int 0x10
+mov al, 'R'
+int 0x10
+mov al, 'A'
+int 0x10
+
 loop: 
 jmp  loop   ; same as jmp $
 
