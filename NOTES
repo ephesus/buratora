@@ -19,7 +19,7 @@ export VIRTUALMACHINE_NAME="test-grounds"
 VBoxManage createvm --name "$VIRTUALMACHINE_NAME" --ostype Other --register
 
 #32 megs of ram, 128MB HDD, utc time, acpi, bridged nic
-VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --memory 16 --rtcuseutc on --acpi on --nic1 bridged --bridgeadapter1 enp6s0 --macaddress1 c0ffeeca5e1c --uart1 0x3f8 4 --uart2 0x2f8 3 --uartmode2 disconnected  --uartmode1 disconnected
+VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --memory 16 --rtcuseutc on --acpi on --nic1 bridged --bridgeadapter1 enp6s0 --macaddress1 c0ffeeca5e1c --uart1 0x3f8 4 --uart2 0x2f8 3 --uartmode2 disconnected  --uartmode1 disconnected --tracing-enabled on
 VBoxManage createhd --filename "$VIRTUALMACHINE_NAME".vdi --size 128 --format VDI
 VBoxManage storagectl "$VIRTUALMACHINE_NAME" --add sata --controller IntelAHCI --name "SATCONTROL"
 VBoxManage storageattach "$VIRTUALMACHINE_NAME" --storagectl "SATCONTROL" --port 0 --device 0 --type hdd --medium "$VIRTUALMACHINE_NAME".vdi
@@ -38,12 +38,16 @@ VBoxManage unregistervm "$VIRTUALMACHINE_NAME" --delete
 
 #fire it up
 VBoxManage startvm "$VIRTUALMACHINE_NAME" --type headless
+VBoxSDL --startvm "$VIRTUALMACHINE_NAME"
 
 #shut it down
 VBoxManage controlvm "$VIRTUALMACHINE_NAME" poweroff
 
 #show info
 VBoxManage showvminfo "$VIRTUALMACHINE_NAME"
+
+export VIRTUALMACHINE_NAME="test-ground"
+
 --------------------------------------------------------
 
 
