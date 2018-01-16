@@ -29,8 +29,8 @@ VBoxManage storagectl "$VIRTUALMACHINE_NAME" --add floppy --name "Floppycontrol"
 #add VRDP 
 VBoxManage setproperty vrdeauthlibrary "VBoxAuthSimple"
 VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --vrdeauthtype external --vrdeauthlibrary VBoxAuthSimple
-export PASSHASH=`VBoxManage internalcommands passwordhash secretpassword|sed  -e 's/Password hash: //g'`
-VBoxManage setextradata "$VIRTUALMACHINE_NAME" "VBoxAuthSimple/users/jlr" $PASSHASH
+export PASSHASH=`VBoxManage internalcommands passwordhash abcDEF123|sed  -e 's/Password hash: //g'`
+VBoxManage setextradata "$VIRTUALMACHINE_NAME" "VBoxAuthSimple/users/ephesus" $PASSHASH
 VBoxManage modifyvm "$VIRTUALMACHINE_NAME" --vrde on --vrdemulticon on --vrdeextpack default --vrdeport 3389 --vrdeauthtype external --vrdeauthlibrary VBoxAuthSimple
 
 #delete it
@@ -47,6 +47,7 @@ VBoxManage controlvm "$VIRTUALMACHINE_NAME" poweroff
 VBoxManage showvminfo "$VIRTUALMACHINE_NAME"
 
 export VIRTUALMACHINE_NAME="test-ground"
+export VIRTUALMACHINE_NAME="Ubuntu Server"
 
 --------------------------------------------------------
 
